@@ -17,8 +17,8 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-zinc-800 bg-zinc-950 pt-5 pb-10 px-2">
-      <p className="px-3 mb-2 text-base font-semibold text-zinc-100">
+    <aside className="hidden md:flex w-52 shrink-0 flex-col border-r border-[var(--divider)] bg-[var(--background)] px-2 pb-10 pt-5 transition-colors duration-300">
+      <p className="mb-2 px-3 text-base font-semibold text-[var(--foreground)]">
         Sections
       </p>
       <nav className="flex flex-col gap-0.5">
@@ -30,8 +30,8 @@ export default function Sidebar() {
               href={section.href}
               className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                 isActive
-                  ? "bg-zinc-100 text-zinc-900 font-medium"
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+                  ? "bg-[var(--foreground)] font-medium text-[var(--background)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
               }`}
             >
               {section.label}

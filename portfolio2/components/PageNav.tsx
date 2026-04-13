@@ -7,12 +7,12 @@ interface PageNavProps {
 
 export default function PageNav({ prev, next }: PageNavProps) {
   return (
-    <div className="flex justify-between items-center mt-16 pt-6 border-t border-zinc-800">
+    <div className="mt-16 flex items-center justify-between border-t border-[var(--divider)] pt-6 transition-colors duration-300">
       <div>
         {prev && (
           <Link
             href={prev.href}
-            className="flex items-center gap-1 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -25,7 +25,7 @@ export default function PageNav({ prev, next }: PageNavProps) {
         {next && (
           <Link
             href={next.href}
-            className="flex items-center gap-1 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]"
           >
             {next.label}
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">

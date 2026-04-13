@@ -11,13 +11,13 @@ export default function Home() {
         {/* Text */}
         <div className="flex flex-col gap-8 flex-1">
           <div>
-            <h1 className="text-5xl font-bold text-white">Muhammed Altan</h1>
-            <h2 className="mt-1 text-3xl font-bold text-zinc-400">
+            <h1 className="text-5xl font-bold text-[var(--foreground)]">Muhammed Altan</h1>
+            <h2 className="mt-1 text-3xl font-bold text-[var(--text-muted)]">
               A developer who loves building things.
             </h2>
           </div>
 
-          <p className="text-lg leading-relaxed text-zinc-300">
+          <p className="text-lg leading-relaxed text-[var(--text-soft)]">
             Full stack developer with a background in both web development and multimedia design.
             I have a strong interest in developing web and system solutions, databases, and
             user-friendly products. I work in a structured manner, am eager to learn, and
@@ -29,7 +29,7 @@ export default function Home() {
             <a
               href="/resume.pdf"
               download="Muhammed Altan - Resume"
-              className="flex items-center gap-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-colors px-5 py-2.5 text-base font-semibold text-white"
+              className="flex items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-base font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)]"
             >
               Get Resume
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -38,7 +38,7 @@ export default function Home() {
             </a>
             <a
               href="mailto:altan_8260@hotmail.com"
-              className="flex items-center gap-2 text-base font-medium text-zinc-300 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-base font-medium text-[var(--text-soft)] transition-colors hover:text-[var(--foreground)]"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

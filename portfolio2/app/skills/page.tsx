@@ -8,7 +8,10 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
     skills: [
       { name: "HTML",         icon: "html5" },
       { name: "CSS",          icon: "css" },
+      { name: "JavaScript",   icon: "javascript" },
       { name: "TypeScript",   icon: "typescript" },
+      { name: "Next.js",      icon: "nextdotjs" },
+      { name: "React",        icon: "react" },
       { name: "Vue.js",       icon: "vuedotjs" },
       { name: "Nuxt.js",      icon: "nuxt" },
       { name: "Tailwind CSS", icon: "tailwindcss" },
@@ -19,7 +22,9 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
   {
     label: "Backend / API",
     skills: [
+      { name: "Cookies" },
       { name: "Nitro" },
+      { name: "Express",    icon: "express" },
       { name: "Node.js",    icon: "nodedotjs" },
       { name: "JWT",        icon: "jsonwebtokens" },
       { name: "Nodemailer" },
@@ -29,6 +34,7 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
   {
     label: "Database & Auth",
     skills: [
+      { name: "MongoDB",  icon: "mongodb" },
       { name: "Supabase", icon: "supabase" },
     ],
   },
@@ -45,6 +51,7 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
       { name: "GitHub",  icon: "github" },
       { name: "npm",     icon: "npm" },
       { name: "Netlify", icon: "netlify" },
+      { name: "Vercel",  icon: "vercel" },
       { name: "Vitest",  icon: "vitest" },
       { name: "jsPDF" },
     ],
@@ -56,29 +63,29 @@ export default function SkillsPage() {
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-white">Skills &amp; Tools</h1>
-          <h2 className="mt-1 text-2xl font-bold text-zinc-400">
+          <h1 className="text-4xl font-bold text-[var(--foreground)]">Skills &amp; Tools</h1>
+          <h2 className="mt-1 text-2xl font-bold text-[var(--text-muted)]">
             Learned by coding all night and debugging all day!
           </h2>
         </div>
 
-        <p className="text-lg text-zinc-300 max-w-3xl leading-relaxed">
+        <p className="max-w-3xl text-lg leading-relaxed text-[var(--text-soft)]">
           I specialize in building full-stack web applications using modern technologies.
           My stack is centred around the Vue / Nuxt ecosystem, with a strong backend
-          foundation using Node.js, Supabase, and RESTful APIs.
+          foundation using Node.js, Express, MongoDB, Supabase, and RESTful APIs.
         </p>
 
         <div className="flex flex-col gap-6">
           {skillGroups.map((group) => (
             <div key={group.label}>
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
                 {group.label}
               </p>
               <div className="flex flex-wrap gap-2">
                 {group.skills.map((skill) => (
                   <span
                     key={skill.name}
-                    className="flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-900"
+                    className="flex items-center gap-2 rounded-md border border-[var(--skill-border)] bg-[var(--skill-surface)] px-3 py-1.5 text-sm font-medium text-[var(--skill-foreground)]"
                   >
                     {skill.icon && (
                       // eslint-disable-next-line @next/next/no-img-element
