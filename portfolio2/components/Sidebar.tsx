@@ -18,7 +18,7 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-zinc-800 bg-zinc-950 pt-5 pb-10 px-2">
-      <p className="px-3 mb-2 text-sm font-semibold text-zinc-100">
+      <p className="px-3 mb-2 text-base font-semibold text-zinc-100">
         Sections
       </p>
       <nav className="flex flex-col gap-0.5">

@@ -11,7 +11,7 @@ export default function Header() {
             href="/"
             className="text-base font-semibold text-zinc-100 hover:text-white transition-colors"
           >
-            ma.dev
+            MA
           </Link>
 
           <nav className="flex items-center gap-1 text-base">
