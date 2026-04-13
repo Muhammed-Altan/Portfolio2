@@ -90,6 +90,14 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="https://lejgopro.dk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
+          >
+            LejGoPro
+          </a>
           <ThemeToggle />
           <a
             href="https://github.com/Muhammed-Altan"

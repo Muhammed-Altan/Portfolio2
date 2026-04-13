@@ -4,8 +4,10 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-5">
-        <h1 className="text-4xl font-bold text-[var(--foreground)]">About Muhammed</h1>
-        <h1 className="text-4xl font-bold text-[var(--text-muted)]">More than just a name</h1>
+        <div>
+          <h1 className="text-4xl font-bold text-[var(--foreground)]">About Muhammed</h1>
+          <h2 className="mt-1 text-2xl font-bold text-[var(--text-muted)]">More than just a name</h2>
+        </div>
         <p className="text-lg leading-relaxed text-[var(--text-soft)]">
           I am a passionate backend developer with a strong knack for building full-stack web applications using modern technologies like Next.js, Nuxt.js, Tailwind CSS and more. 
           My journey in tech started with a curiosity for HTML and CSS and later was fueled by a desire to create dynamic, data-driven applications. 

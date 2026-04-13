@@ -27,6 +27,12 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
       { name: "Express",    icon: "express" },
       { name: "Node.js",    icon: "nodedotjs" },
       { name: "JWT",        icon: "jsonwebtokens" },
+      { name: "bcrypt" },
+      { name: "cors" },
+      { name: "express-rate-limit" },
+      { name: "sanitize-html" },
+      { name: "jwt-decode" },
+      { name: "uuid" },
       { name: "Nodemailer" },
       { name: "Zod" },
     ],
@@ -35,7 +41,16 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
     label: "Database & Auth",
     skills: [
       { name: "MongoDB",  icon: "mongodb" },
+      { name: "Mongo Express" },
       { name: "Supabase", icon: "supabase" },
+    ],
+  },
+  {
+    label: "Testing",
+    skills: [
+      { name: "Jest",      icon: "jest" },
+      { name: "Supertest" },
+      { name: "Vitest",    icon: "vitest" },
     ],
   },
   {
@@ -47,12 +62,13 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
   {
     label: "Dev & Infrastructure",
     skills: [
+      { name: "Docker",  icon: "docker" },
       { name: "Git",     icon: "git" },
       { name: "GitHub",  icon: "github" },
+      { name: "Nodemon", icon: "nodemon" },
       { name: "npm",     icon: "npm" },
       { name: "Netlify", icon: "netlify" },
       { name: "Vercel",  icon: "vercel" },
-      { name: "Vitest",  icon: "vitest" },
       { name: "jsPDF" },
     ],
   },
