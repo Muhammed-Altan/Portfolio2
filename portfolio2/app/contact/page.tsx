@@ -1,13 +1,18 @@
 import PageNav from "@/components/PageNav";
+import { getRequestLocale } from "@/lib/getLocale";
+import { getDictionary } from "@/lib/i18n";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getRequestLocale();
+  const t = getDictionary(locale);
+
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-bold text-[var(--foreground)]">Let&apos;s talk.</h1>
+          <h1 className="text-4xl font-bold text-[var(--foreground)]">{t.contact.title}</h1>
           <p className="text-lg text-[var(--text-muted)]">
-            Have a question, a project in mind, or just want to say hi? My inbox is always open.
+            {t.contact.subtitle}
           </p>
         </div>
 
@@ -22,7 +27,7 @@ export default function ContactPage() {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm text-[var(--text-muted)]">Email</span>
+            <span className="text-sm text-[var(--text-muted)]">{t.contact.email}</span>
             <span className="text-base font-medium text-[var(--foreground)]">altan_8260@hotmail.com</span>
           </div>
           <svg className="ml-2 text-[var(--text-muted)] transition-colors group-hover:text-[var(--foreground)]" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,7 +48,7 @@ export default function ContactPage() {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm text-[var(--text-muted)]">LinkedIn</span>
+            <span className="text-sm text-[var(--text-muted)]">{t.contact.linkedIn}</span>
             <span className="text-base font-medium text-[var(--foreground)]">muhammedaltan</span>
           </div>
           <svg className="ml-2 text-[var(--text-muted)] transition-colors group-hover:text-[var(--foreground)]" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -53,7 +58,7 @@ export default function ContactPage() {
         </a>
       </section>
       <PageNav
-        prev={{ label: "Education", href: "/education" }}
+        prev={{ label: t.sections.education, href: "/education" }}
       />
     </div>
   );

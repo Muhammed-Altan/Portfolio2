@@ -1,4 +1,6 @@
 import PageNav from "@/components/PageNav";
+import { getRequestLocale } from "@/lib/getLocale";
+import { getDictionary } from "@/lib/i18n";
 
 type Skill = { name: string; icon?: string };
 
@@ -75,24 +77,38 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
 ];
 
 export default function SkillsPage() {
+  return <LocalizedSkillsPage />;
+}
+
+async function LocalizedSkillsPage() {
+  const locale = await getRequestLocale();
+  const t = getDictionary(locale);
+
+  const localizedGroups = [
+    { label: t.skills.groups.frontend, skills: skillGroups[0].skills },
+    { label: t.skills.groups.backendApi, skills: skillGroups[1].skills },
+    { label: t.skills.groups.databaseAuth, skills: skillGroups[2].skills },
+    { label: t.skills.groups.testing, skills: skillGroups[3].skills },
+    { label: t.skills.groups.integrations, skills: skillGroups[4].skills },
+    { label: t.skills.groups.devInfra, skills: skillGroups[5].skills },
+  ];
+
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-[var(--foreground)]">Skills &amp; Tools</h1>
+          <h1 className="text-4xl font-bold text-[var(--foreground)]">{t.skills.title}</h1>
           <h2 className="mt-1 text-2xl font-bold text-[var(--text-muted)]">
-            Learned by coding all night and debugging all day!
+            {t.skills.subtitle}
           </h2>
         </div>
 
         <p className="max-w-3xl text-lg leading-relaxed text-[var(--text-soft)]">
-          I specialize in building full-stack web applications using modern technologies.
-          My stack is centred around the Vue / Nuxt ecosystem, with a strong backend
-          foundation using Node.js, Express, MongoDB, Supabase, and RESTful APIs.
+          {t.skills.body}
         </p>
 
         <div className="flex flex-col gap-6">
-          {skillGroups.map((group) => (
+          {localizedGroups.map((group) => (
             <div key={group.label}>
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
                 {group.label}
@@ -122,8 +138,8 @@ export default function SkillsPage() {
       </section>
 
       <PageNav
-        prev={{ label: "Projects", href: "/projects" }}
-        next={{ label: "Experience", href: "/experience" }}
+        prev={{ label: t.sections.projects, href: "/projects" }}
+        next={{ label: t.sections.experience, href: "/experience" }}
       />
     </div>
   );
