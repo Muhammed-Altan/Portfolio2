@@ -2,29 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getDictionary, type Locale } from "@/lib/i18n";
 
-interface SidebarProps {
-  locale: Locale;
-}
+const sections = [
+  { label: "Introduction", href: "/" },
+  { label: "About Me", href: "/about" },
+  { label: "Projects", href: "/projects" },
+  { label: "Skills & Tools", href: "/skills" },
+  { label: "Experience", href: "/experience" },
+  { label: "Education", href: "/education" },
+  { label: "Contact", href: "/contact" },
+];
 
-export default function Sidebar({ locale }: SidebarProps) {
-  const t = getDictionary(locale);
-  const sections = [
-    { label: t.sections.introduction, href: "/" },
-    { label: t.sections.about, href: "/about" },
-    { label: t.sections.projects, href: "/projects" },
-    { label: t.sections.skills, href: "/skills" },
-    { label: t.sections.experience, href: "/experience" },
-    { label: t.sections.education, href: "/education" },
-    { label: t.sections.contact, href: "/contact" },
-  ];
+export default function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="hidden md:flex w-52 shrink-0 flex-col border-r border-[var(--divider)] bg-[var(--background)] px-2 pb-10 pt-5 transition-colors duration-300">
       <p className="mb-2 px-3 text-base font-semibold text-[var(--foreground)]">
-        {t.sections.sections}
+        Sections
       </p>
       <nav className="flex flex-col gap-0.5">
         {sections.map((section) => {

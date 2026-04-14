@@ -4,23 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
-import { getDictionary, type Locale } from "@/lib/i18n";
 
-interface HeaderProps {
-  locale: Locale;
-}
+const sections = [
+  { label: "Introduction", href: "/" },
+  { label: "About Me", href: "/about" },
+  { label: "Projects", href: "/projects" },
+  { label: "Skills & Tools", href: "/skills" },
+  { label: "Experience", href: "/experience" },
+  { label: "Education", href: "/education" },
+  { label: "Contact", href: "/contact" },
+];
 
-export default function Header({ locale }: HeaderProps) {
-  const t = getDictionary(locale);
-  const sections = [
-    { label: t.sections.introduction, href: "/" },
-    { label: t.sections.about, href: "/about" },
-    { label: t.sections.projects, href: "/projects" },
-    { label: t.sections.skills, href: "/skills" },
-    { label: t.sections.experience, href: "/experience" },
-    { label: t.sections.education, href: "/education" },
-    { label: t.sections.contact, href: "/contact" },
-  ];
+export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -31,7 +26,7 @@ export default function Header({ locale }: HeaderProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label={menuOpen ? t.header.closeMenu : t.header.openMenu}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
             className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
           >
             {menuOpen ? (
@@ -66,7 +61,7 @@ export default function Header({ locale }: HeaderProps) {
               href="/"
               className="rounded px-2.5 py-1 font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
             >
-              {t.header.home}
+              Home
             </Link>
             <a
               href="https://www.linkedin.com/in/muhammedaltan"
@@ -74,7 +69,7 @@ export default function Header({ locale }: HeaderProps) {
               rel="noopener noreferrer"
               className="flex items-center gap-1 rounded px-2.5 py-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
             >
-              {t.header.linkedIn}
+              LinkedIn
               <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14" />
               </svg>
@@ -84,7 +79,7 @@ export default function Header({ locale }: HeaderProps) {
               download="Muhammed Altan - Resume"
               className="flex items-center gap-1 rounded px-2.5 py-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
             >
-              {t.header.resume}
+              Resume
               <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="m7 10 5 5 5-5" />
@@ -95,12 +90,20 @@ export default function Header({ locale }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle locale={locale} />
+          <a
+            href="https://lejgopro.dk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
+          >
+            LejGoPro
+          </a>
+          <ThemeToggle />
           <a
             href="https://github.com/Muhammed-Altan"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={t.header.github}
+            aria-label="GitHub"
             className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
           >
             <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor" aria-hidden="true">
@@ -119,7 +122,7 @@ export default function Header({ locale }: HeaderProps) {
               rel="noopener noreferrer"
               className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
             >
-              <span>{t.header.linkedIn}</span>
+              <span>LinkedIn</span>
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14" />
               </svg>
@@ -129,7 +132,7 @@ export default function Header({ locale }: HeaderProps) {
               download="Muhammed Altan - Resume"
               className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
             >
-              <span>{t.header.resume}</span>
+              <span>Resume</span>
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="m7 10 5 5 5-5" />
@@ -138,7 +141,7 @@ export default function Header({ locale }: HeaderProps) {
             </a>
           </div>
 
-          <p className="mb-2 text-center text-xs font-semibold tracking-wide text-[var(--text-muted)]">{t.header.mobileSections}</p>
+          <p className="mb-2 text-center text-xs font-semibold tracking-wide text-[var(--text-muted)]">SECTIONS</p>
           <nav className="flex flex-col gap-2">
             {sections.map((section) => {
               const isActive = pathname === section.href;

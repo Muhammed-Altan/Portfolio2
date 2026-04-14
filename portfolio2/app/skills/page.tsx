@@ -1,10 +1,8 @@
 import PageNav from "@/components/PageNav";
-import { getRequestLocale } from "@/lib/getLocale";
-import { getDictionary } from "@/lib/i18n";
 
 type Skill = { name: string; icon?: string };
 
-const skillGroupsBase: { label: string; skills: Skill[] }[] = [
+const skillGroups: { label: string; skills: Skill[] }[] = [
   {
     label: "Frontend",
     skills: [
@@ -76,49 +74,21 @@ const skillGroupsBase: { label: string; skills: Skill[] }[] = [
   },
 ];
 
-export default async function SkillsPage() {
-  const locale = await getRequestLocale();
-  const t = getDictionary(locale);
-
-  const skillGroups = [
-    {
-      label: t.skills.groups.frontend,
-      skills: skillGroupsBase[0].skills,
-    },
-    {
-      label: t.skills.groups.backendApi,
-      skills: skillGroupsBase[1].skills,
-    },
-    {
-      label: t.skills.groups.databaseAuth,
-      skills: skillGroupsBase[2].skills,
-    },
-    {
-      label: t.skills.groups.testing,
-      skills: skillGroupsBase[3].skills,
-    },
-    {
-      label: t.skills.groups.integrations,
-      skills: skillGroupsBase[4].skills,
-    },
-    {
-      label: t.skills.groups.devInfra,
-      skills: skillGroupsBase[5].skills,
-    },
-  ];
-
+export default function SkillsPage() {
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-[var(--foreground)]">{t.skills.title}</h1>
+          <h1 className="text-4xl font-bold text-[var(--foreground)]">Skills &amp; Tools</h1>
           <h2 className="mt-1 text-2xl font-bold text-[var(--text-muted)]">
-            {t.skills.subtitle}
+            Learned by coding all night and debugging all day!
           </h2>
         </div>
 
         <p className="max-w-3xl text-lg leading-relaxed text-[var(--text-soft)]">
-          {t.skills.body}
+          I specialize in building full-stack web applications using modern technologies.
+          My stack is centred around the Vue / Nuxt ecosystem, with a strong backend
+          foundation using Node.js, Express, MongoDB, Supabase, and RESTful APIs.
         </p>
 
         <div className="flex flex-col gap-6">
@@ -152,8 +122,8 @@ export default async function SkillsPage() {
       </section>
 
       <PageNav
-        prev={{ label: t.sections.projects, href: "/projects" }}
-        next={{ label: t.sections.experience, href: "/experience" }}
+        prev={{ label: "Projects", href: "/projects" }}
+        next={{ label: "Experience", href: "/experience" }}
       />
     </div>
   );
