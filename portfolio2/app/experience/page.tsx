@@ -1,19 +1,24 @@
 import PageNav from "@/components/PageNav";
+import { getRequestLocale } from "@/lib/getLocale";
+import { getDictionary } from "@/lib/i18n";
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
+  const locale = await getRequestLocale();
+  const t = getDictionary(locale);
+
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-8">
-        <h1 className="text-4xl font-bold text-[var(--foreground)]">Experience</h1>
+        <h1 className="text-4xl font-bold text-[var(--foreground)]">{t.experience.title}</h1>
 
         <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 transition-colors duration-300">
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-                Frontend / Full Stack Developer
+                {t.experience.roleOne}
               </p>
               <h2 className="text-2xl font-bold text-[var(--foreground)]">LejGoPro.dk</h2>
-              <p className="text-sm text-[var(--text-muted)]">3 months internship + collaboration on bachelor&apos;s exam project</p>
+              <p className="text-sm text-[var(--text-muted)]">{t.experience.roleOneMeta}</p>
             </div>
 
             <a
@@ -22,48 +27,39 @@ export default function ExperiencePage() {
               rel="noopener noreferrer"
               className="shrink-0 rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)]"
             >
-              Visit Site
+              {t.experience.visitSite}
             </a>
           </div>
 
           <p className="text-base leading-relaxed text-[var(--text-soft)]">
-            At LejGoPro.dk, I worked with both frontend and backend development in a real business setup.
-            I helped build and improve platform features with a strong focus on practical, user-friendly
-            solutions that support real customer needs.
+            {t.experience.roleOneP1}
           </p>
 
           <p className="text-base leading-relaxed text-[var(--text-soft)]">
-            I also developed my bachelor&apos;s exam project in collaboration with the same company, where I
-            combined design, frontend development, backend logic, and system structure in one complete
-            solution. This gave me strong hands-on experience in taking a product from concept to delivery
-            and further shaped my profile as a full stack developer.
+            {t.experience.roleOneP2}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 transition-colors duration-300">
           <div className="flex flex-col gap-1">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-              Academic Project (2nd Semester)
+              {t.experience.roleTwo}
             </p>
-            <h2 className="text-2xl font-bold text-[var(--foreground)]">Kantine Web Application</h2>
+            <h2 className="text-2xl font-bold text-[var(--foreground)]">{t.experience.roleTwoTitle}</h2>
           </div>
 
           <p className="text-base leading-relaxed text-[var(--text-soft)]">
-            I developed a full-stack canteen management web application as part of my second-semester
-            academic project. I built a complete ordering solution with authentication, an admin panel,
-            and order handling features using a modern containerized setup.
+            {t.experience.roleTwoP1}
           </p>
 
           <p className="text-base leading-relaxed text-[var(--text-soft)]">
-            Through this project, I gained practical experience with Docker, RESTful API design, database security,
-            and responsive UI development. It strengthened my ability to build secure, scalable applications with
-            clear separation of concerns and deployment-ready infrastructure.
+            {t.experience.roleTwoP2}
           </p>
         </div>
       </section>
       <PageNav
-        prev={{ label: "Skills & Tools", href: "/skills" }}
-        next={{ label: "Education", href: "/education" }}
+        prev={{ label: t.sections.skills, href: "/skills" }}
+        next={{ label: t.sections.education, href: "/education" }}
       />
     </div>
   );

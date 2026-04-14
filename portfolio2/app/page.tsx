@@ -1,8 +1,12 @@
-import Link from "next/link";
 import Image from "next/image";
 import PageNav from "@/components/PageNav";
+import { getRequestLocale } from "@/lib/getLocale";
+import { getDictionary } from "@/lib/i18n";
 
-export default function Home() {
+export default async function Home() {
+  const locale = await getRequestLocale();
+  const t = getDictionary(locale);
+
   return (
     <div className="flex flex-col justify-between min-h-full">
       {/* Main content */}
@@ -13,15 +17,12 @@ export default function Home() {
           <div>
             <h1 className="text-5xl font-bold text-[var(--foreground)]">Muhammed Altan</h1>
             <h2 className="mt-1 text-3xl font-bold text-[var(--text-muted)]">
-              A developer who loves building things.
+              {t.home.subtitle}
             </h2>
           </div>
 
           <p className="text-lg leading-relaxed text-[var(--text-soft)]">
-            Full stack developer with a background in both web development and multimedia design.
-            I have a strong interest in developing web and system solutions, databases, and
-            user-friendly products. I work in a structured manner, am eager to learn, and
-            thrive both independently and in teams.
+            {t.home.body}
           </p>
 
           {/* Buttons */}
@@ -31,7 +32,7 @@ export default function Home() {
               download="Muhammed Altan - Resume"
               className="flex items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-base font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)]"
             >
-              Get Resume
+              {t.home.resumeCta}
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14" />
               </svg>
@@ -43,7 +44,7 @@ export default function Home() {
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              Send Mail
+              {t.home.mailCta}
             </a>
           </div>
         </div>
@@ -61,7 +62,7 @@ export default function Home() {
         </div>
       </div>
 
-      <PageNav next={{ label: "About Me", href: "/about" }} />
+      <PageNav next={{ label: t.sections.about, href: "/about" }} />
     </div>
   );
 }

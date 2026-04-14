@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
 type Theme = "dark" | "light";
 
@@ -16,7 +17,12 @@ function applyTheme(theme: Theme) {
   document.documentElement.setAttribute("data-theme", theme);
 }
 
-export default function ThemeToggle() {
+interface ThemeToggleProps {
+  locale: Locale;
+}
+
+export default function ThemeToggle({ locale }: ThemeToggleProps) {
+  const t = getDictionary(locale);
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
@@ -38,14 +44,14 @@ export default function ThemeToggle() {
     });
   }
 
-  const nextLabel = theme === "dark" ? "Light mode" : "Dark mode";
+  const nextLabel = theme === "dark" ? t.theme.lightMode : t.theme.darkMode;
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
       className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
-      aria-label={`Switch to ${nextLabel.toLowerCase()}`}
+      aria-label={`${t.theme.switchTo} ${nextLabel.toLowerCase()}`}
       title={nextLabel}
     >
       {theme === "dark" ? (
