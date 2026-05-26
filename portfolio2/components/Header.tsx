@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import LanguageSelect from "@/components/LanguageSelect";
 import ThemeToggle, { type Theme } from "@/components/ThemeToggle";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
@@ -96,6 +97,7 @@ export default function Header({ locale, initialTheme }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSelect locale={locale} />
           <ThemeToggle locale={locale} initialTheme={initialTheme} />
           <a
             href="https://github.com/Muhammed-Altan"

@@ -28,6 +28,9 @@ export const dictionary = {
       closeMenu: "Close menu",
       github: "GitHub",
       mobileSections: "SECTIONS",
+      language: "Language",
+      languageEnglishUs: "🇺🇸 English (US)",
+      languageDanish: "🇩🇰 Dansk",
     },
     theme: {
       lightMode: "Light mode",
@@ -38,7 +41,7 @@ export const dictionary = {
       subtitle: "A developer who loves building things.",
       body: "Full stack developer with a background in both web development and multimedia design. I have a strong interest in developing web and system solutions, databases, and user-friendly products. I work in a structured manner, am eager to learn, and thrive both independently and in teams.",
       resumeCta: "Get Resume",
-      mailCta: "Send Mail",
+      mailCta: "Send Email",
     },
     about: {
       title: "About Muhammed",
@@ -57,7 +60,7 @@ export const dictionary = {
     skills: {
       title: "Skills & Tools",
       subtitle: "Learned by coding all night and debugging all day!",
-      body: "I specialize in building full-stack web applications using modern technologies. My stack is centred around the Vue / Nuxt ecosystem, with a strong backend foundation using Node.js, Express, MongoDB, Supabase, and RESTful APIs.",
+      body: "I specialize in building full-stack web applications using modern technologies. My stack is centered around the Vue / Nuxt ecosystem, with a strong backend foundation using Node.js, Express, MongoDB, Supabase, and RESTful APIs.",
       groups: {
         frontend: "Frontend",
         backendApi: "Backend / API",
@@ -122,6 +125,9 @@ export const dictionary = {
       closeMenu: "Luk menu",
       github: "GitHub",
       mobileSections: "SEKTIONER",
+      language: "Sprog",
+      languageEnglishUs: "🇺🇸 Engelsk (US)",
+      languageDanish: "🇩🇰 Dansk",
     },
     theme: {
       lightMode: "Lys tilstand",
