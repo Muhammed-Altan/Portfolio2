@@ -1,28 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import PageNav from "@/components/PageNav";
+import ProjectImage from "@/components/ProjectImage";
+import SkillsMarquee from "@/components/SkillsMarquee";
 import { getRequestLocale } from "@/lib/getLocale";
 import { getDictionary } from "@/lib/i18n";
 import {
   mapProjectRowWithTranslations,
+  toSupabaseRenderUrl,
   type ProjectBaseRow,
   type ProjectLocale,
   type ProjectTranslationRow,
 } from "@/lib/projects";
 import { createClient } from "@/utils/supabase/server";
-
-const topSkills = [
-  "Next.js",
-  "TypeScript",
-  "Node.js",
-  "Express",
-  "Supabase",
-  "MongoDB",
-  "REST APIs",
-  "Docker",
-  "Jest",
-  "Vercel",
-];
 
 export default async function Home() {
   const locale = await getRequestLocale();
@@ -177,12 +167,8 @@ export default async function Home() {
           <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
             {landing.skillsTitle}
           </h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {topSkills.map((skill) => (
-              <span key={skill} className="rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-medium text-[var(--text-soft)]">
-                {skill}
-              </span>
-            ))}
+          <div className="mt-3">
+            <SkillsMarquee />
           </div>
         </article>
       </section>
@@ -202,8 +188,15 @@ export default async function Home() {
             {projects.map((project) => (
               <article key={project.id} className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-md shadow-black/10">
                 <Link href={`/projects/${project.id}`} className="block h-full">
-                  <div className="h-32 w-full bg-[var(--background)]">
-                    <img src={project.topImageUrl} alt={project.title} className="h-full w-full object-cover" />
+                  <div className="relative h-32 w-full bg-[var(--background)]">
+                    <ProjectImage
+                      src={toSupabaseRenderUrl(project.topImageUrl, 840, 70)}
+                      alt={project.title}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                      className="object-cover"
+                    />
                   </div>
                   <div className="space-y-2 p-4">
                     <p className="line-clamp-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{project.header}</p>

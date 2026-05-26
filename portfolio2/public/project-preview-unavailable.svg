@@ -1,0 +1,29 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Project preview unavailable</title>
+  <desc id="desc">Decorative placeholder shown when a project image cannot be loaded.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1E26"/>
+      <stop offset="1" stop-color="#163A3F"/>
+    </linearGradient>
+    <linearGradient id="card" x1="430" y1="250" x2="1170" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A3F44"/>
+      <stop offset="1" stop-color="#24545A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <circle cx="220" cy="150" r="120" fill="#2D6E74" fill-opacity="0.22"/>
+  <circle cx="1400" cy="720" r="200" fill="#2D6E74" fill-opacity="0.18"/>
+
+  <rect x="430" y="250" width="740" height="400" rx="28" fill="url(#card)" stroke="#6CA7AB" stroke-opacity="0.45" stroke-width="2"/>
+
+  <rect x="520" y="340" width="560" height="220" rx="18" fill="#0F2A33" stroke="#6CA7AB" stroke-opacity="0.35"/>
+  <circle cx="630" cy="430" r="42" fill="#6CA7AB" fill-opacity="0.75"/>
+  <path d="M720 530L810 435L885 505L970 420L1040 530H720Z" fill="#6CA7AB" fill-opacity="0.8"/>
+
+  <text x="800" y="718" text-anchor="middle" fill="#D6E6E8" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" letter-spacing="0.02em">
+    Preview unavailable
+  </text>
+</svg>

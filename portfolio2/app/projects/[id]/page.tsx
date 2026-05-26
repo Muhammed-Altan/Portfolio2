@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ProjectImage from "@/components/ProjectImage";
 import {
   mapProjectRowWithTranslations,
+  toSupabaseRenderUrl,
   type ProjectBaseRow,
   type ProjectLocale,
   type ProjectTranslationRow,
@@ -71,8 +73,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       </div>
 
       <article className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-lg shadow-black/10">
-        <div className="relative h-64 w-full bg-[var(--background)] md:h-80">
-          <img src={project.topImageUrl} alt={project.title} className="h-full w-full object-cover" />
+        <div className="relative aspect-[16/9] w-full bg-[var(--background)]">
+          <ProjectImage
+            src={toSupabaseRenderUrl(project.topImageUrl, 1600, 75)}
+            alt={project.title}
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-cover"
+            priority
+          />
         </div>
 
         <div className="space-y-8 p-6 md:p-8">
@@ -104,7 +114,15 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 </p>
               ) : (
                 <figure key={`${project.id}-image-${index}`} className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)]">
-                  <img src={block.value} alt={`${project.title} section ${index + 1}`} className="w-full object-cover" />
+                  <ProjectImage
+                    src={toSupabaseRenderUrl(block.value, 1400, 75)}
+                    alt={`${project.title} section ${index + 1}`}
+                    width={1400}
+                    height={900}
+                    unoptimized
+                    sizes="(max-width: 768px) 100vw, 1100px"
+                    className="h-auto w-full object-cover"
+                  />
                 </figure>
               ),
             )}

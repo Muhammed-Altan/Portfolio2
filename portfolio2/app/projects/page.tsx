@@ -1,9 +1,11 @@
 import Link from "next/link";
 import PageNav from "@/components/PageNav";
+import ProjectImage from "@/components/ProjectImage";
 import { getRequestLocale } from "@/lib/getLocale";
 import { getDictionary } from "@/lib/i18n";
 import {
   mapProjectRowWithTranslations,
+  toSupabaseRenderUrl,
   type ProjectBaseRow,
   type ProjectLocale,
   type ProjectTranslationRow,
@@ -79,10 +81,13 @@ export default async function ProjectsPage() {
               <article key={project.id} className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-md shadow-black/10 transition-transform hover:-translate-y-0.5">
                 <Link href={`/projects/${project.id}`} className="block h-full">
                   <div className="relative h-40 w-full bg-[var(--background)]">
-                    <img
-                      src={project.topImageUrl}
+                    <ProjectImage
+                      src={toSupabaseRenderUrl(project.topImageUrl, 960, 72)}
                       alt={project.title}
-                      className="h-full w-full object-cover"
+                      fill
+                      unoptimized
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      className="object-cover"
                     />
                   </div>
 

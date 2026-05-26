@@ -7,6 +7,36 @@ export function normalizeImageUrl(value: string) {
   return value.replace(/%2520/g, "%20").replace(/ /g, "%20");
 }
 
+export function toSupabaseRenderUrl(url: string, width: number, quality = 75) {
+  const normalizedUrl = normalizeImageUrl(url);
+  const marker = "/storage/v1/object/public/";
+
+  if (!normalizedUrl.includes(marker)) {
+    return normalizedUrl;
+  }
+
+  // Supabase render endpoint can reject some bucket names (for example names with spaces).
+  // In those cases we keep the original public object URL so images still load.
+  const objectPath = normalizedUrl.split(marker)[1] ?? "";
+  const [rawBucketName] = objectPath.split("/");
+  const decodedBucketName = decodeURIComponent(rawBucketName ?? "");
+  const isRenderSafeBucket = /^[A-Za-z0-9._-]+$/.test(decodedBucketName);
+
+  if (!isRenderSafeBucket) {
+    return normalizedUrl;
+  }
+
+  const renderUrl = normalizedUrl.replace(
+    marker,
+    "/storage/v1/render/image/public/",
+  );
+  const separator = renderUrl.includes("?") ? "&" : "?";
+  const safeWidth = Math.max(1, Math.round(width));
+  const safeQuality = Math.max(1, Math.min(100, Math.round(quality)));
+
+  return `${renderUrl}${separator}width=${safeWidth}&quality=${safeQuality}`;
+}
+
 export function normalizeProjectUrl(value: string | null | undefined) {
   const normalized = value?.trim();
 

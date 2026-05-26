@@ -1,4 +1,5 @@
 import PageNav from "@/components/PageNav";
+import SkillsMarquee from "@/components/SkillsMarquee";
 import { getRequestLocale } from "@/lib/getLocale";
 import { getDictionary } from "@/lib/i18n";
 
@@ -93,6 +94,13 @@ async function LocalizedSkillsPage() {
     { label: t.skills.groups.devInfra, skills: skillGroups[5].skills },
   ];
 
+  const marqueeItems = skillGroups.flatMap((group) =>
+    group.skills.map((skill) => ({
+      name: skill.name,
+      icon: skill.icon,
+    })),
+  );
+
   return (
     <div className="flex flex-col justify-between min-h-full">
       <section className="flex flex-col gap-6">
@@ -106,6 +114,10 @@ async function LocalizedSkillsPage() {
         <p className="max-w-3xl text-lg leading-relaxed text-[var(--text-soft)]">
           {t.skills.body}
         </p>
+
+        <div>
+          <SkillsMarquee items={marqueeItems} />
+        </div>
 
         <div className="flex flex-col gap-6">
           {localizedGroups.map((group) => (
