@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getRequestLocale } from "@/lib/getLocale";
@@ -46,13 +45,9 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
-        <Header locale={locale} initialTheme={savedTheme} />
-        <div className="flex flex-1">
-          <Sidebar locale={locale} />
-          <main className="flex-1 overflow-y-auto p-5 md:p-10">
-            {children}
-          </main>
-        </div>
+        <AppShell locale={locale} initialTheme={savedTheme}>
+          {children}
+        </AppShell>
         <Analytics />
         <SpeedInsights />
       </body>

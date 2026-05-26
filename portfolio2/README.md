@@ -1,5 +1,18 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Admin login
+
+The project now includes a protected `/admin` area with JWT cookies, a login form, logout, and route protection.
+
+Add these environment variables to your local environment:
+
+```bash
+JWT_ACCESS_SECRET=your-super-secret-access-token-key
+JWT_REFRESH_SECRET=your-super-secret-refresh-token-key
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=your-secure-password-here
+```
+
 ## Getting Started
 
 First, run the development server:
