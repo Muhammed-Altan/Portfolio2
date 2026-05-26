@@ -18,14 +18,27 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const locale = await getRequestLocale();
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const backLabel = resolvedLocale === "da" ? "Tilbage til projekter" : "Back to projects";
+  const visitLabel = resolvedLocale === "da" ? "Besøg side" : "Visit page";
   const supabase = await createClient();
 
-  const { data: projectRow, error: projectError } = await supabase
+  let { data: projectRow, error: projectError } = await supabase
     .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
     .eq("id", id)
     .eq("published", true)
     .single();
+
+  if (projectError?.message?.includes("project_url")) {
+    const fallback = await supabase
+      .from("projects")
+      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .eq("id", id)
+      .eq("published", true)
+      .single();
+
+    projectRow = fallback.data ? { ...fallback.data, project_url: null } : fallback.data;
+    projectError = fallback.error;
+  }
 
   if (projectError || !projectRow) {
     notFound();
@@ -70,6 +83,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               <span className="rounded-full border border-[var(--border)] px-3 py-1">{project.role}</span>
               <span className="rounded-full border border-[var(--border)] px-3 py-1">{project.duration}</span>
             </div>
+            {project.projectUrl ? (
+              <a
+                href={project.projectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)]"
+              >
+                {visitLabel}
+              </a>
+            ) : null}
             <p className="text-base leading-relaxed text-[var(--text-soft)]">{project.summary}</p>
           </header>
 

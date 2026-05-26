@@ -7,6 +7,20 @@ export function normalizeImageUrl(value: string) {
   return value.replace(/%2520/g, "%20").replace(/ /g, "%20");
 }
 
+export function normalizeProjectUrl(value: string | null | undefined) {
+  const normalized = value?.trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.toLowerCase() === "null" || normalized.toLowerCase() === "undefined") {
+    return null;
+  }
+
+  return normalized;
+}
+
 export type ProjectLocale = "en" | "da";
 
 export type ProjectBaseRow = {
@@ -17,6 +31,7 @@ export type ProjectBaseRow = {
   duration: string;
   summary: string;
   top_image_url: string;
+  project_url?: string | null;
   content_blocks: unknown;
   published: boolean;
   created_at: string;
@@ -41,6 +56,7 @@ export type ProjectRecord = {
   duration: string;
   summary: string;
   topImageUrl: string;
+  projectUrl: string | null;
   contentBlocks: ProjectContentBlock[];
   published: boolean;
   createdAt: string;
@@ -78,6 +94,7 @@ export function mapProjectRow(row: {
   duration: string;
   summary: string;
   top_image_url: string;
+  project_url?: string | null;
   content_blocks: unknown;
   published: boolean;
   created_at: string;
@@ -90,6 +107,7 @@ export function mapProjectRow(row: {
     duration: row.duration,
     summary: row.summary,
     topImageUrl: normalizeImageUrl(row.top_image_url),
+    projectUrl: normalizeProjectUrl(row.project_url),
     contentBlocks: normalizeProjectContentBlocks(row.content_blocks),
     published: row.published,
     createdAt: row.created_at,
@@ -142,6 +160,7 @@ export function mapProjectRowWithTranslations(
     duration: resolvedDuration,
     summary: resolvedSummary,
     topImageUrl: normalizeImageUrl(row.top_image_url),
+    projectUrl: normalizeProjectUrl(row.project_url),
     contentBlocks:
       localizedBlocks.length > 0
         ? localizedBlocks

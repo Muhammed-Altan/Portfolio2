@@ -20,6 +20,7 @@ type ProjectLocalePayload = {
 type ProjectInsertPayload = {
   id?: string;
   topImageUrl?: string;
+  projectUrl?: string;
   translations?: Partial<Record<ProjectLocale, ProjectLocalePayload>>;
   title?: string;
   header?: string;
@@ -28,6 +29,10 @@ type ProjectInsertPayload = {
   summary?: string;
   blocks?: unknown;
 };
+
+function isMissingProjectUrlColumn(error: { message?: string } | null) {
+  return Boolean(error?.message?.includes("projects.project_url") || error?.message?.includes("project_url"));
+}
 
 function getText(value: string | undefined, fallback = "") {
   return value?.trim() ?? fallback;
@@ -94,14 +99,31 @@ async function upsertProjectTranslations(
 
 export const GET = withAdminAuth(async () => {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
     .order("created_at", { ascending: false });
+
+  if (error && isMissingProjectUrlColumn(error)) {
+    const fallback = await supabase
+      .from("projects")
+      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .order("created_at", { ascending: false });
+
+    data = (fallback.data ?? []).map((row) => ({ ...row, project_url: null }));
+    error = fallback.error;
+  }
 
   if (error) {
     return NextResponse.json(
       { success: false, message: error.message },
+      { status: 500 },
+    );
+  }
+
+  if (!data) {
+    return NextResponse.json(
+      { success: false, message: "Project could not be created." },
       { status: 500 },
     );
   }
@@ -147,6 +169,7 @@ export const POST = withAdminAuth(async (request) => {
   const payload = (await request.json().catch(() => null)) as ProjectInsertPayload | null;
 
   const topImageUrl = normalizeImageUrl(getText(payload?.topImageUrl));
+  const projectUrl = getText(payload?.projectUrl) || null;
   const english = resolveLocalePayload(payload, "en");
   const danishInput = resolveLocalePayload(payload, "da");
   const danish = {
@@ -180,7 +203,7 @@ export const POST = withAdminAuth(async (request) => {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("projects")
     .insert({
       title: english.title,
@@ -189,15 +212,43 @@ export const POST = withAdminAuth(async (request) => {
       duration: english.duration,
       summary: english.summary,
       top_image_url: topImageUrl,
+      project_url: projectUrl,
       content_blocks: english.blocks,
       published: true,
     })
-    .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
     .single();
+
+  if (error && isMissingProjectUrlColumn(error)) {
+    const fallback = await supabase
+      .from("projects")
+      .insert({
+        title: english.title,
+        header: english.header,
+        role: english.role,
+        duration: english.duration,
+        summary: english.summary,
+        top_image_url: topImageUrl,
+        content_blocks: english.blocks,
+        published: true,
+      })
+      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .single();
+
+    data = fallback.data ? { ...fallback.data, project_url: null } : fallback.data;
+    error = fallback.error;
+  }
 
   if (error) {
     return NextResponse.json(
       { success: false, message: error.message },
+      { status: 500 },
+    );
+  }
+
+  if (!data) {
+    return NextResponse.json(
+      { success: false, message: "Project could not be updated." },
       { status: 500 },
     );
   }
@@ -237,6 +288,7 @@ export const PATCH = withAdminAuth(async (request) => {
   }
 
   const topImageUrl = normalizeImageUrl(getText(payload?.topImageUrl));
+  const projectUrl = getText(payload?.projectUrl) || null;
   const english = resolveLocalePayload(payload, "en");
   const danishInput = resolveLocalePayload(payload, "da");
   const danish = {
@@ -270,7 +322,7 @@ export const PATCH = withAdminAuth(async (request) => {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("projects")
     .update({
       title: english.title,
@@ -279,15 +331,43 @@ export const PATCH = withAdminAuth(async (request) => {
       duration: english.duration,
       summary: english.summary,
       top_image_url: topImageUrl,
+      project_url: projectUrl,
       content_blocks: english.blocks,
     })
     .eq("id", id)
-    .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
     .single();
+
+  if (error && isMissingProjectUrlColumn(error)) {
+    const fallback = await supabase
+      .from("projects")
+      .update({
+        title: english.title,
+        header: english.header,
+        role: english.role,
+        duration: english.duration,
+        summary: english.summary,
+        top_image_url: topImageUrl,
+        content_blocks: english.blocks,
+      })
+      .eq("id", id)
+      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .single();
+
+    data = fallback.data ? { ...fallback.data, project_url: null } : fallback.data;
+    error = fallback.error;
+  }
 
   if (error) {
     return NextResponse.json(
       { success: false, message: error.message },
+      { status: 500 },
+    );
+  }
+
+  if (!data) {
+    return NextResponse.json(
+      { success: false, message: "Project could not be updated." },
       { status: 500 },
     );
   }

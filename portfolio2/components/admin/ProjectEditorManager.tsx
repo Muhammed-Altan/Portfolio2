@@ -86,6 +86,7 @@ export default function ProjectEditorManager() {
     da: { ...emptyFields },
   });
   const [topImageUrl, setTopImageUrl] = useState("");
+  const [projectUrl, setProjectUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadImageError, setUploadImageError] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<EditableBlock[]>([]);
@@ -143,6 +144,7 @@ export default function ProjectEditorManager() {
   function resetForm() {
     setFields({ en: { ...emptyFields }, da: { ...emptyFields } });
     setTopImageUrl("");
+    setProjectUrl("");
     setBlocks([]);
     setUploadImageError(null);
     setEditingProjectId(null);
@@ -181,6 +183,7 @@ export default function ProjectEditorManager() {
     });
 
     setTopImageUrl(project.topImageUrl);
+    setProjectUrl(project.projectUrl ?? "");
     setBlocks(toEditableBlocks(project));
     setEditingProjectId(project.id);
     setMessage(null);
@@ -268,6 +271,7 @@ export default function ProjectEditorManager() {
     const payload = {
       id: editingProjectId ?? undefined,
       topImageUrl,
+      projectUrl,
       translations: {
         en: {
           ...fields.en,
@@ -317,6 +321,7 @@ export default function ProjectEditorManager() {
                 ? {
                     ...project,
                     ...data.project,
+                    projectUrl,
                     translations: payload.translations,
                   }
                 : project,
@@ -324,6 +329,7 @@ export default function ProjectEditorManager() {
           : [
               {
                 ...(data.project as ProjectRecord),
+                projectUrl,
                 translations: payload.translations,
               },
               ...current,
@@ -431,6 +437,16 @@ export default function ProjectEditorManager() {
             <span className="text-[var(--text-muted)]">Short summary</span>
             <textarea value={currentFields.summary} onChange={(event) => updateField(activeLocale, "summary", event.target.value)} rows={4} className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:border-[var(--border-strong)]" required={activeLocale === "en"} />
           </label>
+
+          <label className="space-y-2 text-sm md:col-span-2">
+            <span className="text-[var(--text-muted)]">Project page URL</span>
+            <input
+              value={projectUrl}
+              onChange={(event) => setProjectUrl(event.target.value)}
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:border-[var(--border-strong)]"
+              placeholder="https://example.com"
+            />
+          </label>
         </div>
 
         <div className="mt-8 space-y-4">
@@ -489,6 +505,16 @@ export default function ProjectEditorManager() {
               <p className="font-semibold text-[var(--foreground)]">{project.title}</p>
               <p className="mt-1 text-xs uppercase tracking-[0.15em] text-[var(--text-muted)]">{project.role} • {project.duration}</p>
               <p className="mt-2 text-sm text-[var(--text-muted)]">{project.summary}</p>
+              {project.projectUrl ? (
+                <a
+                  href={project.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2.5 py-1 text-xs font-medium text-[var(--foreground)] hover:border-[var(--border-strong)]"
+                >
+                  Visit page
+                </a>
+              ) : null}
               <div className="mt-3 flex gap-2">
                 <button type="button" onClick={() => startEditing(project)} className="rounded-lg border border-[var(--border)] px-3 py-1 text-xs font-medium hover:border-[var(--border-strong)]">Edit</button>
                 <button type="button" onClick={() => handleDelete(project.id)} disabled={deletingProjectId === project.id} className="rounded-lg border border-red-400/40 px-3 py-1 text-xs font-medium text-red-200 hover:border-red-300 disabled:opacity-60">{deletingProjectId === project.id ? "Deleting..." : "Delete"}</button>

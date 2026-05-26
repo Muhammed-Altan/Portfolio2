@@ -16,11 +16,22 @@ export default async function ProjectsPage() {
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const readMoreLabel = resolvedLocale === "da" ? "Laes mere" : "Read more";
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
     .eq("published", true)
     .order("created_at", { ascending: false });
+
+  if (error?.message?.includes("project_url")) {
+    const fallback = await supabase
+      .from("projects")
+      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .eq("published", true)
+      .order("created_at", { ascending: false });
+
+    data = (fallback.data ?? []).map((row) => ({ ...row, project_url: null }));
+    error = fallback.error;
+  }
 
   const fallbackLocales: ProjectLocale[] =
     resolvedLocale === "en" ? ["en"] : ["da", "en"];
