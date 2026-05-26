@@ -29,8 +29,8 @@ export const dictionary = {
       github: "GitHub",
       mobileSections: "SECTIONS",
       language: "Language",
-      languageEnglishUs: "🇺🇸 English (US)",
-      languageDanish: "🇩🇰 Dansk",
+      languageEnglishUs: "English (US)",
+      languageDanish: "Danish",
     },
     theme: {
       lightMode: "Light mode",
@@ -126,8 +126,8 @@ export const dictionary = {
       github: "GitHub",
       mobileSections: "SEKTIONER",
       language: "Sprog",
-      languageEnglishUs: "🇺🇸 Engelsk (US)",
-      languageDanish: "🇩🇰 Dansk",
+      languageEnglishUs: "Engelsk (US)",
+      languageDanish: "Dansk",
     },
     theme: {
       lightMode: "Lys tilstand",
