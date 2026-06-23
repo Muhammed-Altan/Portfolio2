@@ -9,14 +9,19 @@ export interface AdminUser {
 
 export async function getAuthenticatedAdminFromCookies(): Promise<AdminUser | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
 
-  if (error || !user?.email) return null;
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  return { id: user.id, email: user.email, role: "admin" };
+    if (error || !user?.email) return null;
+
+    return { id: user.id, email: user.email, role: "admin" };
+  } catch {
+    return null;
+  }
 }
 
 export function withAdminAuth(

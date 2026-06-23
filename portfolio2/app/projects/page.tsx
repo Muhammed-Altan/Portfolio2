@@ -18,21 +18,35 @@ export default async function ProjectsPage() {
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const readMoreLabel = resolvedLocale === "da" ? "Laes mere" : "Read more";
   const supabase = await createClient();
-  let { data, error } = await supabase
-    .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
-    .eq("published", true)
-    .order("created_at", { ascending: false });
+  let data: ProjectBaseRow[] | null = null;
+  let error: string | null = null;
 
-  if (error?.message?.includes("project_url")) {
-    const fallback = await supabase
+  try {
+    const result = await supabase
       .from("projects")
-      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+      .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
       .eq("published", true)
       .order("created_at", { ascending: false });
 
-    data = (fallback.data ?? []).map((row) => ({ ...row, project_url: null }));
-    error = fallback.error;
+    data = (result.data ?? null) as ProjectBaseRow[] | null;
+    error = result.error?.message ?? null;
+  } catch {
+    error = "fetch_failed";
+  }
+
+  if (error?.includes("project_url")) {
+    try {
+      const fallback = await supabase
+        .from("projects")
+        .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+
+      data = ((fallback.data ?? []).map((row) => ({ ...row, project_url: null })) as unknown) as ProjectBaseRow[];
+      error = fallback.error?.message ?? null;
+    } catch {
+      error = "fetch_failed";
+    }
   }
 
   const fallbackLocales: ProjectLocale[] =
@@ -41,18 +55,22 @@ export default async function ProjectsPage() {
   let translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
 
   if (!error && projectIds.length > 0) {
-    const { data: translationsData } = await supabase
-      .from("project_translations")
-      .select("project_id,locale,title,header,role,duration,summary,content_blocks")
-      .in("project_id", projectIds)
-      .in("locale", fallbackLocales);
+    try {
+      const { data: translationsData } = await supabase
+        .from("project_translations")
+        .select("project_id,locale,title,header,role,duration,summary,content_blocks")
+        .in("project_id", projectIds)
+        .in("locale", fallbackLocales);
 
-    translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
-      const current = map.get(translation.project_id) ?? [];
-      current.push(translation as ProjectTranslationRow);
-      map.set(translation.project_id, current);
-      return map;
-    }, new Map<string, ProjectTranslationRow[]>());
+      translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
+        const current = map.get(translation.project_id) ?? [];
+        current.push(translation as ProjectTranslationRow);
+        map.set(translation.project_id, current);
+        return map;
+      }, new Map<string, ProjectTranslationRow[]>());
+    } catch {
+      translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
+    }
   }
 
   const projects = error
@@ -77,7 +95,7 @@ export default async function ProjectsPage() {
           <p className="text-base text-[var(--text-muted)]">No projects added yet. Use the admin project editor to add your first dynamic project.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {projects.map((project) => (
+            {projects.map((project, index) => (
               <article key={project.id} className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-md shadow-black/10 transition-transform hover:-translate-y-0.5">
                 <Link href={`/projects/${project.id}`} className="block h-full">
                   <div className="relative h-40 w-full bg-[var(--background)]">
@@ -86,6 +104,7 @@ export default async function ProjectsPage() {
                       alt={project.title}
                       fill
                       unoptimized
+                      loading={index === 0 ? "eager" : "lazy"}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       className="object-cover"
                     />

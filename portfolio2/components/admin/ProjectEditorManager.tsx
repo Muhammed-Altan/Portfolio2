@@ -89,6 +89,8 @@ export default function ProjectEditorManager() {
   const [projectUrl, setProjectUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadImageError, setUploadImageError] = useState<string | null>(null);
+  const [uploadingBlockId, setUploadingBlockId] = useState<string | null>(null);
+  const [blockUploadError, setBlockUploadError] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<EditableBlock[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -206,6 +208,26 @@ export default function ProjectEditorManager() {
     );
   }
 
+  async function uploadImageFile(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/projects/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = (await response.json().catch(() => null)) as
+      | { success?: boolean; url?: string; message?: string }
+      | null;
+
+    if (!response.ok || !data?.success || !data.url) {
+      throw new Error(data?.message ?? "Upload failed.");
+    }
+
+    return data.url;
+  }
+
   function removeBlock(id: string) {
     setBlocks((current) => current.filter((block) => block.id !== id));
   }
@@ -233,29 +255,39 @@ export default function ProjectEditorManager() {
     setUploadImageError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/admin/projects/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = (await response.json().catch(() => null)) as
-        | { success?: boolean; url?: string; message?: string }
-        | null;
-
-      if (!response.ok || !data?.success || !data.url) {
-        throw new Error(data?.message ?? "Upload failed.");
-      }
-
-      setTopImageUrl(data.url);
+      const url = await uploadImageFile(file);
+      setTopImageUrl(url);
     } catch (uploadError) {
       setUploadImageError(
         uploadError instanceof Error ? uploadError.message : "Upload failed.",
       );
     } finally {
       setUploadingImage(false);
+      if (event.currentTarget) {
+        event.currentTarget.value = "";
+      }
+    }
+  }
+
+  async function handleBlockImageUpload(
+    blockId: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.currentTarget.files?.[0];
+    if (!file) return;
+
+    setUploadingBlockId(blockId);
+    setBlockUploadError(null);
+
+    try {
+      const url = await uploadImageFile(file);
+      updateBlockImageUrl(blockId, url);
+    } catch (uploadError) {
+      setBlockUploadError(
+        uploadError instanceof Error ? uploadError.message : "Upload failed.",
+      );
+    } finally {
+      setUploadingBlockId(null);
       if (event.currentTarget) {
         event.currentTarget.value = "";
       }
@@ -469,7 +501,30 @@ export default function ProjectEditorManager() {
                   {block.type === "text" ? (
                     <textarea value={block.text[activeLocale]} onChange={(event) => updateBlockText(block.id, activeLocale, event.target.value)} rows={5} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--border-strong)]" />
                   ) : (
-                    <input value={block.imageUrl} onChange={(event) => updateBlockImageUrl(block.id, event.target.value)} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--border-strong)]" />
+                    <div className="space-y-3">
+                      {block.imageUrl ? (
+                        <div className="relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+                          <img src={block.imageUrl} alt={`Block ${index + 1}`} className="h-40 w-full object-cover" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
+                            <button type="button" onClick={() => updateBlockImageUrl(block.id, "")} className="rounded-lg border border-red-400/50 px-3 py-1 text-sm text-red-200 hover:border-red-300">Remove</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
+                          <p>No image selected</p>
+                        </div>
+                      )}
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => handleBlockImageUpload(block.id, event)}
+                        disabled={uploadingBlockId === block.id}
+                        className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm cursor-pointer disabled:opacity-60"
+                      />
+                      {uploadingBlockId === block.id ? <p className="text-xs text-[var(--text-muted)]">Uploading...</p> : null}
+                      {blockUploadError && uploadingBlockId === null ? <p className="text-xs text-red-300">{blockUploadError}</p> : null}
+                    </div>
                   )}
                 </article>
               ))}

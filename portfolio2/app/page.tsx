@@ -20,12 +20,22 @@ export default async function Home() {
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
-    .eq("published", true)
-    .order("created_at", { ascending: false })
-    .limit(4);
+  let data: ProjectBaseRow[] | null = null;
+  let error: string | null = null;
+
+  try {
+    const result = await supabase
+      .from("projects")
+      .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(4);
+
+    data = (result.data ?? null) as ProjectBaseRow[] | null;
+    error = result.error?.message ?? null;
+  } catch {
+    error = "fetch_failed";
+  }
 
   const projectIds = (data ?? []).map((item) => item.id);
   const fallbackLocales: ProjectLocale[] =
@@ -33,18 +43,22 @@ export default async function Home() {
   let translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
 
   if (!error && projectIds.length > 0) {
-    const { data: translationsData } = await supabase
-      .from("project_translations")
-      .select("project_id,locale,title,header,role,duration,summary,content_blocks")
-      .in("project_id", projectIds)
-      .in("locale", fallbackLocales);
+    try {
+      const { data: translationsData } = await supabase
+        .from("project_translations")
+        .select("project_id,locale,title,header,role,duration,summary,content_blocks")
+        .in("project_id", projectIds)
+        .in("locale", fallbackLocales);
 
-    translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
-      const current = map.get(translation.project_id) ?? [];
-      current.push(translation as ProjectTranslationRow);
-      map.set(translation.project_id, current);
-      return map;
-    }, new Map<string, ProjectTranslationRow[]>());
+      translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
+        const current = map.get(translation.project_id) ?? [];
+        current.push(translation as ProjectTranslationRow);
+        map.set(translation.project_id, current);
+        return map;
+      }, new Map<string, ProjectTranslationRow[]>());
+    } catch {
+      translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
+    }
   }
 
   const projects = error
@@ -98,6 +112,17 @@ export default async function Home() {
           contactLink: "Contact me",
         };
 
+  const homeSkillTags = [
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Tailwind CSS",
+    "Node.js",
+    "Supabase",
+    "MongoDB",
+    "REST API",
+  ];
+
   return (
     <div className="flex min-h-full flex-col gap-10">
       <section className="flex items-start gap-12 pt-10">
@@ -137,7 +162,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="shrink-0">
+        <div className="hidden shrink-0 sm:block">
           <Image
             src="/MA.png"
             alt="Muhammed Altan"
@@ -156,7 +181,7 @@ export default async function Home() {
           </h3>
           <ul className="mt-3 grid gap-2 text-sm text-[var(--text-soft)] md:grid-cols-2">
             {landing.valueItems.map((item) => (
-              <li key={item} className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2">
+              <li key={item} className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 leading-relaxed break-words">
                 {item}
               </li>
             ))}
@@ -167,8 +192,18 @@ export default async function Home() {
           <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
             {landing.skillsTitle}
           </h3>
-          <div className="mt-3">
+          <div className="mt-3 hidden sm:block">
             <SkillsMarquee />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 sm:hidden">
+            {homeSkillTags.map((skill) => (
+              <span
+                key={skill}
+                className="rounded-full border border-[var(--skill-border)] bg-[var(--skill-surface)] px-3 py-1.5 text-xs font-medium text-[var(--skill-foreground)]"
+              >
+                {skill}
+              </span>
+            ))}
           </div>
         </article>
       </section>
