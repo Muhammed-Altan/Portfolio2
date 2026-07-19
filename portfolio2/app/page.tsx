@@ -5,72 +5,15 @@ import ProjectImage from "@/components/ProjectImage";
 import SkillsMarquee from "@/components/SkillsMarquee";
 import { getRequestLocale } from "@/lib/getLocale";
 import { getDictionary, getResumeAsset } from "@/lib/i18n";
-import {
-  mapProjectRowWithTranslations,
-  toSupabaseRenderUrl,
-  type ProjectBaseRow,
-  type ProjectLocale,
-  type ProjectTranslationRow,
-} from "@/lib/projects";
-import { createClient } from "@/utils/supabase/server";
+import { toSupabaseRenderUrl, type ProjectLocale } from "@/lib/projects";
+import { getPublishedProjects } from "@/lib/public-projects";
 
 export default async function Home() {
   const locale = await getRequestLocale();
   const t = getDictionary(locale);
   const resumeAsset = getResumeAsset(locale);
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
-  const supabase = await createClient();
-
-  let data: ProjectBaseRow[] | null = null;
-  let error: string | null = null;
-
-  try {
-    const result = await supabase
-      .from("projects")
-      .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
-      .eq("published", true)
-      .order("created_at", { ascending: false })
-      .limit(4);
-
-    data = (result.data ?? null) as ProjectBaseRow[] | null;
-    error = result.error?.message ?? null;
-  } catch {
-    error = "fetch_failed";
-  }
-
-  const projectIds = (data ?? []).map((item) => item.id);
-  const fallbackLocales: ProjectLocale[] =
-    resolvedLocale === "en" ? ["en"] : ["da", "en"];
-  let translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
-
-  if (!error && projectIds.length > 0) {
-    try {
-      const { data: translationsData } = await supabase
-        .from("project_translations")
-        .select("project_id,locale,title,header,role,duration,summary,content_blocks")
-        .in("project_id", projectIds)
-        .in("locale", fallbackLocales);
-
-      translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
-        const current = map.get(translation.project_id) ?? [];
-        current.push(translation as ProjectTranslationRow);
-        map.set(translation.project_id, current);
-        return map;
-      }, new Map<string, ProjectTranslationRow[]>());
-    } catch {
-      translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
-    }
-  }
-
-  const projects = error
-    ? []
-    : (data ?? []).map((row) =>
-        mapProjectRowWithTranslations(
-          row as ProjectBaseRow,
-          translationsByProjectId.get(row.id) ?? [],
-          resolvedLocale,
-        ),
-      );
+  const projects = await getPublishedProjects(resolvedLocale, 4);
 
   const landing =
     resolvedLocale === "da"

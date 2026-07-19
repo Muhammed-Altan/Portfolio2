@@ -5,7 +5,9 @@ import {
   normalizeProjectContentBlocks,
   type ProjectLocale,
 } from "@/lib/projects";
+import { getPublicProjectsTag } from "@/lib/public-projects";
 import { withAdminAuth } from "@/lib/admin-auth";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 type ProjectLocalePayload = {
@@ -36,6 +38,10 @@ function isMissingProjectUrlColumn(error: { message?: string } | null) {
 
 function getText(value: string | undefined, fallback = "") {
   return value?.trim() ?? fallback;
+}
+
+function revalidatePublicProjectCache() {
+  revalidateTag(getPublicProjectsTag());
 }
 
 function resolveLocalePayload(payload: ProjectInsertPayload | null, locale: ProjectLocale) {
@@ -270,6 +276,8 @@ export const POST = withAdminAuth(async (request) => {
     );
   }
 
+  revalidatePublicProjectCache();
+
   return NextResponse.json(
     { success: true, project: mapProjectRow(data) },
     { status: 201 },
@@ -389,6 +397,8 @@ export const PATCH = withAdminAuth(async (request) => {
     );
   }
 
+  revalidatePublicProjectCache();
+
   return NextResponse.json({ success: true, project: mapProjectRow(data) });
 });
 
@@ -412,6 +422,8 @@ export const DELETE = withAdminAuth(async (request) => {
       { status: 500 },
     );
   }
+
+  revalidatePublicProjectCache();
 
   return NextResponse.json({ success: true });
 });

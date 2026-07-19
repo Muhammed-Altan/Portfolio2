@@ -3,85 +3,15 @@ import PageNav from "@/components/PageNav";
 import ProjectImage from "@/components/ProjectImage";
 import { getRequestLocale } from "@/lib/getLocale";
 import { getDictionary } from "@/lib/i18n";
-import {
-  mapProjectRowWithTranslations,
-  toSupabaseRenderUrl,
-  type ProjectBaseRow,
-  type ProjectLocale,
-  type ProjectTranslationRow,
-} from "@/lib/projects";
-import { createClient } from "@/utils/supabase/server";
+import { toSupabaseRenderUrl, type ProjectLocale } from "@/lib/projects";
+import { getPublishedProjects } from "@/lib/public-projects";
 
 export default async function ProjectsPage() {
   const locale = await getRequestLocale();
   const t = getDictionary(locale);
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const readMoreLabel = resolvedLocale === "da" ? "Laes mere" : "Read more";
-  const supabase = await createClient();
-  let data: ProjectBaseRow[] | null = null;
-  let error: string | null = null;
-
-  try {
-    const result = await supabase
-      .from("projects")
-      .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
-      .eq("published", true)
-      .order("created_at", { ascending: false });
-
-    data = (result.data ?? null) as ProjectBaseRow[] | null;
-    error = result.error?.message ?? null;
-  } catch {
-    error = "fetch_failed";
-  }
-
-  if (error?.includes("project_url")) {
-    try {
-      const fallback = await supabase
-        .from("projects")
-        .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
-        .eq("published", true)
-        .order("created_at", { ascending: false });
-
-      data = ((fallback.data ?? []).map((row) => ({ ...row, project_url: null })) as unknown) as ProjectBaseRow[];
-      error = fallback.error?.message ?? null;
-    } catch {
-      error = "fetch_failed";
-    }
-  }
-
-  const fallbackLocales: ProjectLocale[] =
-    resolvedLocale === "en" ? ["en"] : ["da", "en"];
-  const projectIds = (data ?? []).map((item) => item.id);
-  let translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
-
-  if (!error && projectIds.length > 0) {
-    try {
-      const { data: translationsData } = await supabase
-        .from("project_translations")
-        .select("project_id,locale,title,header,role,duration,summary,content_blocks")
-        .in("project_id", projectIds)
-        .in("locale", fallbackLocales);
-
-      translationsByProjectId = (translationsData ?? []).reduce((map, translation) => {
-        const current = map.get(translation.project_id) ?? [];
-        current.push(translation as ProjectTranslationRow);
-        map.set(translation.project_id, current);
-        return map;
-      }, new Map<string, ProjectTranslationRow[]>());
-    } catch {
-      translationsByProjectId = new Map<string, ProjectTranslationRow[]>();
-    }
-  }
-
-  const projects = error
-    ? []
-    : (data ?? []).map((row) =>
-        mapProjectRowWithTranslations(
-          row as ProjectBaseRow,
-          translationsByProjectId.get(row.id) ?? [],
-          resolvedLocale,
-        ),
-      );
+  const projects = await getPublishedProjects(resolvedLocale);
 
   return (
     <div className="flex flex-col justify-between min-h-full">

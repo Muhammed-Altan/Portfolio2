@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectImage from "@/components/ProjectImage";
-import {
-  mapProjectRowWithTranslations,
-  toSupabaseRenderUrl,
-  type ProjectBaseRow,
-  type ProjectLocale,
-  type ProjectTranslationRow,
-} from "@/lib/projects";
+import { toSupabaseRenderUrl, type ProjectLocale } from "@/lib/projects";
 import { getRequestLocale } from "@/lib/getLocale";
-import { createClient } from "@/utils/supabase/server";
+import { getPublishedProjectById } from "@/lib/public-projects";
 
 type ProjectDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -21,45 +15,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const backLabel = resolvedLocale === "da" ? "Tilbage til projekter" : "Back to projects";
   const visitLabel = resolvedLocale === "da" ? "Besøg side" : "Visit page";
-  const supabase = await createClient();
+  const project = await getPublishedProjectById(id, resolvedLocale);
 
-  let { data: projectRow, error: projectError } = await supabase
-    .from("projects")
-    .select("id,title,header,role,duration,summary,top_image_url,project_url,content_blocks,published,created_at")
-    .eq("id", id)
-    .eq("published", true)
-    .single();
-
-  if (projectError?.message?.includes("project_url")) {
-    const fallback = await supabase
-      .from("projects")
-      .select("id,title,header,role,duration,summary,top_image_url,content_blocks,published,created_at")
-      .eq("id", id)
-      .eq("published", true)
-      .single();
-
-    projectRow = fallback.data ? { ...fallback.data, project_url: null } : fallback.data;
-    projectError = fallback.error;
-  }
-
-  if (projectError || !projectRow) {
+  if (!project) {
     notFound();
   }
-
-  const fallbackLocales: ProjectLocale[] =
-    resolvedLocale === "en" ? ["en"] : ["da", "en"];
-
-  const { data: translationsData } = await supabase
-    .from("project_translations")
-    .select("project_id,locale,title,header,role,duration,summary,content_blocks")
-    .eq("project_id", projectRow.id)
-    .in("locale", fallbackLocales);
-
-  const project = mapProjectRowWithTranslations(
-    projectRow as ProjectBaseRow,
-    (translationsData ?? []) as ProjectTranslationRow[],
-    resolvedLocale,
-  );
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 pb-10">
