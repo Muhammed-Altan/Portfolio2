@@ -38,7 +38,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             src={toSupabaseRenderUrl(project.topImageUrl, 1600, 75)}
             alt={project.title}
             fill
-            unoptimized
             sizes="(max-width: 768px) 100vw, 1200px"
             className="object-cover"
             priority
@@ -79,7 +78,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                     alt={`${project.title} section ${index + 1}`}
                     width={1400}
                     height={900}
-                    unoptimized
                     sizes="(max-width: 768px) 100vw, 1100px"
                     className="h-auto w-full object-cover"
                   />

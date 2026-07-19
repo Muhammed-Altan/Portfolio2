@@ -21,7 +21,10 @@ type ServerDiagnosticResult = {
   imageProbeResults: Array<{
     id: string;
     title: string;
-    url: string;
+    sourceUrl: string;
+    optimizedUrl: string;
+    width: number;
+    quality: number;
     headStatus: number | null;
     contentType: string | null;
     contentLength: string | null;
@@ -44,6 +47,11 @@ type BrowserImageProbeResult = {
   width: number;
   height: number;
   error: string | null;
+};
+
+type BrowserProbePair = {
+  source: BrowserImageProbeResult;
+  optimized: BrowserImageProbeResult;
 };
 
 interface ProjectDiagnosticsPanelProps {
@@ -77,39 +85,58 @@ export default function ProjectDiagnosticsPanel({ initialLocale }: ProjectDiagno
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ServerDiagnosticResult | null>(null);
   const [roundTripMs, setRoundTripMs] = useState<number | null>(null);
-  const [browserImageResults, setBrowserImageResults] = useState<BrowserImageProbeResult[]>([]);
+  const [browserImageResults, setBrowserImageResults] = useState<BrowserProbePair[]>([]);
   const [requestError, setRequestError] = useState<string | null>(null);
+
+  async function measureBrowserImage(title: string, url: string, cacheBusterKey: string) {
+    const startedAt = performance.now();
+
+    try {
+      const dimensions = await loadImage(appendProbeParam(url, Number(cacheBusterKey)));
+      return {
+        title,
+        url,
+        durationMs: Number((performance.now() - startedAt).toFixed(1)),
+        width: dimensions.width,
+        height: dimensions.height,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        title,
+        url,
+        durationMs: Number((performance.now() - startedAt).toFixed(1)),
+        width: 0,
+        height: 0,
+        error: error instanceof Error ? error.message : "Image load failed",
+      };
+    }
+  }
 
   async function runBrowserImageProbes(serverResult: ServerDiagnosticResult) {
     const probes = await Promise.all(
       serverResult.imageProbeResults.map(async (item, index) => {
-        const startedAt = performance.now();
+        const [source, optimized] = await Promise.all([
+          measureBrowserImage(item.title, item.sourceUrl, `${index}1`),
+          measureBrowserImage(item.title, item.optimizedUrl, `${index}2`),
+        ]);
 
-        try {
-          const dimensions = await loadImage(appendProbeParam(item.url, index));
-          return {
-            title: item.title,
-            url: item.url,
-            durationMs: Number((performance.now() - startedAt).toFixed(1)),
-            width: dimensions.width,
-            height: dimensions.height,
-            error: null,
-          };
-        } catch (error) {
-          return {
-            title: item.title,
-            url: item.url,
-            durationMs: Number((performance.now() - startedAt).toFixed(1)),
-            width: 0,
-            height: 0,
-            error: error instanceof Error ? error.message : "Image load failed",
-          };
-        }
+        return { source, optimized };
       }),
     );
 
     console.groupCollapsed(`[diagnostics] browser image probes ${serverResult.mode}/${serverResult.locale}`);
-    console.table(probes);
+    console.table(
+      probes.map((probe) => ({
+        title: probe.source.title,
+        sourceMs: probe.source.durationMs,
+        optimizedMs: probe.optimized.durationMs,
+        sourceSize: `${probe.source.width}x${probe.source.height}`,
+        optimizedSize: `${probe.optimized.width}x${probe.optimized.height}`,
+        sourceError: probe.source.error,
+        optimizedError: probe.optimized.error,
+      })),
+    );
     console.groupEnd();
     setBrowserImageResults(probes);
   }
@@ -255,7 +282,7 @@ export default function ProjectDiagnosticsPanel({ initialLocale }: ProjectDiagno
           <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
             <h2 className="text-xl font-semibold text-[var(--foreground)]">Image probe results</h2>
             <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Server results come from HEAD requests inside the deployed runtime. Browser results come from direct image loads in your own session.
+              Server results come from HEAD requests against the raw source URL inside the deployed runtime. Browser results compare the raw source image against the actual Next optimized image path.
             </p>
 
             <div className="mt-4 overflow-x-auto">
@@ -263,10 +290,11 @@ export default function ProjectDiagnosticsPanel({ initialLocale }: ProjectDiagno
                 <thead>
                   <tr className="border-b border-[var(--border)] text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
                     <th className="px-3 py-2">Project</th>
-                    <th className="px-3 py-2">Server HEAD</th>
-                    <th className="px-3 py-2">Browser load</th>
-                    <th className="px-3 py-2">Status</th>
-                    <th className="px-3 py-2">Size</th>
+                    <th className="px-3 py-2">Source HEAD</th>
+                    <th className="px-3 py-2">Source browser</th>
+                    <th className="px-3 py-2">Next browser</th>
+                    <th className="px-3 py-2">Source status</th>
+                    <th className="px-3 py-2">Source size</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -277,14 +305,18 @@ export default function ProjectDiagnosticsPanel({ initialLocale }: ProjectDiagno
                       <tr key={item.id} className="border-b border-[var(--border)] align-top last:border-b-0">
                         <td className="px-3 py-3">
                           <p className="font-medium text-[var(--foreground)]">{item.title}</p>
-                          <a href={item.url} target="_blank" rel="noreferrer" className="mt-1 block break-all text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">
-                            {item.url}
+                          <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="mt-1 block break-all text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">
+                            source: {item.sourceUrl}
+                          </a>
+                          <a href={item.optimizedUrl} target="_blank" rel="noreferrer" className="mt-1 block break-all text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">
+                            next: {item.optimizedUrl}
                           </a>
                         </td>
                         <td className="px-3 py-3">{item.durationMs} ms</td>
-                        <td className="px-3 py-3">{browserItem ? `${browserItem.durationMs} ms` : "-"}</td>
-                        <td className="px-3 py-3">{item.headStatus ?? browserItem?.error ?? "error"}</td>
-                        <td className="px-3 py-3">{item.contentLength ?? (browserItem ? `${browserItem.width}x${browserItem.height}` : "-")}</td>
+                        <td className="px-3 py-3">{browserItem ? `${browserItem.source.durationMs} ms` : "-"}</td>
+                        <td className="px-3 py-3">{browserItem ? `${browserItem.optimized.durationMs} ms` : "-"}</td>
+                        <td className="px-3 py-3">{item.headStatus ?? browserItem?.source.error ?? "error"}</td>
+                        <td className="px-3 py-3">{item.contentLength ?? (browserItem ? `${browserItem.source.width}x${browserItem.source.height}` : "-")}</td>
                       </tr>
                     );
                   })}

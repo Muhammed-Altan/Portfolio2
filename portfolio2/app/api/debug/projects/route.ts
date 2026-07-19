@@ -15,7 +15,10 @@ type DiagnosticMode = "home" | "projects";
 type ImageProbeResult = {
   id: string;
   title: string;
-  url: string;
+  sourceUrl: string;
+  optimizedUrl: string;
+  width: number;
+  quality: number;
   headStatus: number | null;
   contentType: string | null;
   contentLength: string | null;
@@ -29,6 +32,30 @@ function getMode(value: string | null): DiagnosticMode {
 
 function getLocale(value: string | null): ProjectLocale {
   return value === "da" ? "da" : "en";
+}
+
+function getImageTargetConfig(mode: DiagnosticMode) {
+  if (mode === "home") {
+    return {
+      width: 840,
+      quality: 70,
+    };
+  }
+
+  return {
+    width: 960,
+    quality: 72,
+  };
+}
+
+function toNextOptimizedImageUrl(origin: string, sourceUrl: string, width: number, quality: number) {
+  const searchParams = new URLSearchParams({
+    url: sourceUrl,
+    w: String(width),
+    q: String(quality),
+  });
+
+  return `${origin}/_next/image?${searchParams.toString()}`;
 }
 
 async function probeImageHead(url: string) {
@@ -150,15 +177,20 @@ export async function GET(request: NextRequest) {
   const mappingMs = Number((performance.now() - mappingStartedAt).toFixed(1));
 
   const imageProbeTargets = projects.slice(0, mode === "home" ? 4 : 6);
+  const imageTarget = getImageTargetConfig(mode);
   const imageProbeResults: ImageProbeResult[] = await Promise.all(
     imageProbeTargets.map(async (project) => {
-      const url = toSupabaseRenderUrl(project.topImageUrl, mode === "home" ? 840 : 960, mode === "home" ? 70 : 72);
-      const probe = await probeImageHead(url);
+      const sourceUrl = toSupabaseRenderUrl(project.topImageUrl, imageTarget.width, imageTarget.quality);
+      const optimizedUrl = toNextOptimizedImageUrl(request.nextUrl.origin, sourceUrl, imageTarget.width, imageTarget.quality);
+      const probe = await probeImageHead(sourceUrl);
 
       return {
         id: project.id,
         title: project.title,
-        url,
+        sourceUrl,
+        optimizedUrl,
+        width: imageTarget.width,
+        quality: imageTarget.quality,
         ...probe,
       };
     }),
