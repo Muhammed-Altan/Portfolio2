@@ -204,3 +204,17 @@ export const dictionary = {
 export function getDictionary(locale: Locale) {
   return dictionary[locale] ?? dictionary[DEFAULT_LOCALE];
 }
+
+export function getResumeAsset(locale: Locale) {
+  if (locale === "da") {
+    return {
+      href: "/CV%20Dansk.pdf",
+      download: "Muhammed Altan - CV Dansk.pdf",
+    };
+  }
+
+  return {
+    href: "/CV%20Engelsk.pdf",
+    download: "Muhammed Altan - CV Engelsk.pdf",
+  };
+}

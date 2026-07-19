@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import LanguageSelect from "@/components/LanguageSelect";
 import ThemeToggle, { type Theme } from "@/components/ThemeToggle";
-import { getDictionary, type Locale } from "@/lib/i18n";
+import { getDictionary, getResumeAsset, type Locale } from "@/lib/i18n";
 
 interface HeaderProps {
   locale: Locale;
@@ -14,6 +14,7 @@ interface HeaderProps {
 
 export default function Header({ locale, initialTheme }: HeaderProps) {
   const t = getDictionary(locale);
+  const resumeAsset = getResumeAsset(locale);
   const sections = [
     { label: t.sections.introduction, href: "/" },
     { label: t.sections.about, href: "/about" },
@@ -82,8 +83,8 @@ export default function Header({ locale, initialTheme }: HeaderProps) {
               </svg>
             </a>
             <a
-              href="/resume.pdf"
-              download="Muhammed Altan - Resume"
+              href={resumeAsset.href}
+              download={resumeAsset.download}
               className="flex items-center gap-1 rounded px-2.5 py-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
             >
               {t.header.resume}
@@ -128,8 +129,8 @@ export default function Header({ locale, initialTheme }: HeaderProps) {
               </svg>
             </a>
             <a
-              href="/resume.pdf"
-              download="Muhammed Altan - Resume"
+              href={resumeAsset.href}
+              download={resumeAsset.download}
               className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-soft)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
             >
               <span>{t.header.resume}</span>

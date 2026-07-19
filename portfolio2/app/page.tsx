@@ -4,7 +4,7 @@ import PageNav from "@/components/PageNav";
 import ProjectImage from "@/components/ProjectImage";
 import SkillsMarquee from "@/components/SkillsMarquee";
 import { getRequestLocale } from "@/lib/getLocale";
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, getResumeAsset } from "@/lib/i18n";
 import {
   mapProjectRowWithTranslations,
   toSupabaseRenderUrl,
@@ -17,6 +17,7 @@ import { createClient } from "@/utils/supabase/server";
 export default async function Home() {
   const locale = await getRequestLocale();
   const t = getDictionary(locale);
+  const resumeAsset = getResumeAsset(locale);
   const resolvedLocale: ProjectLocale = locale === "da" ? "da" : "en";
   const supabase = await createClient();
 
@@ -141,8 +142,8 @@ export default async function Home() {
           {/* Buttons */}
           <div className="flex items-center gap-4">
             <a
-              href="/resume.pdf"
-              download="Muhammed Altan - Resume"
+              href={resumeAsset.href}
+              download={resumeAsset.download}
               className="flex items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-base font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-hover)]"
             >
               {t.home.resumeCta}
