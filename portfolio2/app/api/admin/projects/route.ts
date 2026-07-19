@@ -41,7 +41,7 @@ function getText(value: string | undefined, fallback = "") {
 }
 
 function revalidatePublicProjectCache() {
-  revalidateTag(getPublicProjectsTag());
+  revalidateTag(getPublicProjectsTag(), "max");
 }
 
 function resolveLocalePayload(payload: ProjectInsertPayload | null, locale: ProjectLocale) {
